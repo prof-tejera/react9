@@ -48,6 +48,7 @@ const MessagesWrap = styled.div`
   border-radius: 20px;
   overflow-y: scroll;
   margin: 20px;
+  width: 440px;
 `;
 
 const Setup = styled.div`
@@ -71,14 +72,6 @@ const ChatProvider = ({ children }) => {
   };
 
   const addMessage = ({ username, content }) => {
-    // setMessages(prevMessages => [
-    //   ...prevMessages,
-    //   {
-    //     date: new Date(),
-    //     username,
-    //     content,
-    //   },
-    // ]);
     setMessages([
       ...messages,
       {
@@ -160,6 +153,9 @@ const User = ({ username }) => {
 const Inner = () => {
   const { getUsers, getMessages, addUser } = useContext(ChatContextClass);
 
+  const messages = getMessages();
+  console.log(messages);
+
   return (
     <Row>
       <Setup>
@@ -178,7 +174,8 @@ const Inner = () => {
         </div>
       </Setup>
       <MessagesWrap>
-        {getMessages().map(({ username, content, date }) => (
+        {messages.length === 0 && <div style={{ paddingTop: 20 }}>No messages yet...</div>}
+        {messages.map(({ username, content, date }) => (
           <MessageWrap key={date.getTime()}>
             <label style={{ padding: '0px 10px' }}>
               {username} <i style={{ color: '#888', float: 'right' }}>on {date.toLocaleString()}</i>

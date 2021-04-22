@@ -1,7 +1,7 @@
 /**
- * Add Notes:
- * https://blog.bitsrc.io/wouter-a-minimalist-alternative-to-react-router-2756690c2b77
- *
+ * QuillJS: https://quilljs.com/
+ * React QuillJS: https://github.com/zenoamaro/react-quill
+ * React Router: https://reactrouter.com/
  */
 
 import { useContext, useState, createContext, useEffect } from 'react';
