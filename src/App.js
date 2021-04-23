@@ -3,7 +3,7 @@ import Blog from './Blog';
 import SimpleRichText from './SimpleRichText';
 
 function App() {
-  return <ProblemContext />;
+  return <Blog />;
 }
 
 export default App;

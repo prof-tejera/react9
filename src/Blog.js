@@ -90,7 +90,7 @@ const BlogProvider = ({ children }) => {
   );
 };
 
-const Post = ({ title, content }) => {
+const Post = () => {
   const { id } = useParams();
   const { getPostById } = useContext(BlogContextClass);
 
@@ -111,7 +111,7 @@ const Home = () => {
   const length = getPosts().length;
   return (
     <div>
-      <h1>Welcome to the Blog</h1>
+      <h1>Welcome to the Blog ({length})</h1>
       {length === 0 && (
         <Alert>
           There are no entries in this blog, <Link to="/create">create one</Link>!

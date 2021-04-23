@@ -62,18 +62,27 @@ const Content = styled.div``;
 const ChatProvider = ({ children }) => {
   const [users, setUsers] = useState([]);
   const [messages, setMessages] = useState([]);
+  const [typing, setTyping] = useState({});
 
   const addUser = username => {
     setUsers([...users, username]);
   };
 
   const removeUser = username => {
-    setUsers(users.filter(u => u === username));
+    setUsers(users.filter(u => u !== username));
+  };
+
+  const setUserTyping = ({ username, isTyping }) => {
+    setTyping({
+      ...typing,
+      [username]: isTyping,
+    });
   };
 
   const addMessage = ({ username, content }) => {
-    setMessages([
-      ...messages,
+    // [{ content: 'User 1 Joined' }]
+    setMessages(prevMessages => [
+      ...prevMessages,
       {
         date: new Date(),
         username,
@@ -87,9 +96,11 @@ const ChatProvider = ({ children }) => {
       value={{
         getUsers: () => users,
         getMessages: () => messages,
+        isUserTyping: username => typing[username],
         addMessage,
         addUser,
         removeUser,
+        setUserTyping,
       }}
     >
       {children}
@@ -97,20 +108,27 @@ const ChatProvider = ({ children }) => {
   );
 };
 
-const InputWithAction = ({ onSubmit, label }) => {
+const InputWithAction = ({ onSubmit, label, setIsTyping }) => {
   const [content, setContent] = useState('');
   return (
     <div>
       <Input
         value={content}
         onChange={e => {
-          setContent(e.target.value);
+          const { value } = e.target;
+          setContent(value);
+          if (setIsTyping) {
+            setIsTyping(value.length > 0);
+          }
         }}
       />
       <Button
         onClick={() => {
           onSubmit(content);
           setContent('');
+          if (setIsTyping) {
+            setIsTyping(false);
+          }
         }}
       >
         {label}
@@ -120,7 +138,7 @@ const InputWithAction = ({ onSubmit, label }) => {
 };
 
 const User = ({ username }) => {
-  const { addMessage, removeUser } = useContext(ChatContextClass);
+  const { addMessage, removeUser, setUserTyping } = useContext(ChatContextClass);
 
   useEffect(() => {
     // on mount, add join message
@@ -136,6 +154,12 @@ const User = ({ username }) => {
       <div style={{ padding: 5 }}>{username}</div>
       <InputWithAction
         label="Send"
+        setIsTyping={isTyping => {
+          setUserTyping({
+            username,
+            isTyping,
+          });
+        }}
         onSubmit={content => {
           addMessage({ username, content });
         }}
@@ -151,10 +175,9 @@ const User = ({ username }) => {
 };
 
 const Inner = () => {
-  const { getUsers, getMessages, addUser } = useContext(ChatContextClass);
+  const { getUsers, getMessages, addUser, isUserTyping } = useContext(ChatContextClass);
 
   const messages = getMessages();
-  console.log(messages);
 
   return (
     <Row>
@@ -178,7 +201,8 @@ const Inner = () => {
         {messages.map(({ username, content, date }) => (
           <MessageWrap key={date.getTime()}>
             <label style={{ padding: '0px 10px' }}>
-              {username} <i style={{ color: '#888', float: 'right' }}>on {date.toLocaleString()}</i>
+              {username} {isUserTyping(username) && 'Typing...'}{' '}
+              <i style={{ color: '#888', float: 'right' }}>on {date.toLocaleString()}</i>
             </label>
             <Message color={COLORS[getUsers().indexOf(username)]}>
               <Content>{content}</Content>

@@ -11,8 +11,8 @@ const RichText = ({ onChange }) => {
 
   useEffect(() => {
     if (quill) {
-      quill.on('text-change', delta => {
-        console.log(delta);
+      quill.on('text-change', () => {
+        // console.log(delta);
         console.log(quill.root.innerHTML);
       });
     }
